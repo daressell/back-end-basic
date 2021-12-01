@@ -12,8 +12,10 @@ app.use(urlencoded({ extended: true }))
 const folders = fs.readdirSync("./controllers")
 folders.map((folder) => {
   fs.readdirSync(`./controllers/${folder}`).map((file) => {
-    import(`./controllers/${folder}/${file}`).then(module => {
-      app.use("/todo", module.default)
+    import(`./controllers/${folder}/${file}`).then((module) => {
+      file.includes("get")
+        ? app["get"]("/todo", module.default)
+        : app["use"]("/todo", module.default)
     })
   })
 })
