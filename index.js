@@ -1,8 +1,5 @@
 const express = require("express")
-const config = require("config")
 require("dotenv").config()
-
-const host = config.get("dbUser.host")
 
 const PORT = process.env.PORT
 const app = express()
