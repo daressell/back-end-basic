@@ -1,5 +1,5 @@
-const db = require("./../../todos")
+// import db from "./../../todos"
 
-module.exports = (req, res) => {
+export default (req, res) => {
   res.send(req.body)
 }
