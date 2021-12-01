@@ -1,11 +1,5 @@
 {
-  "Customer": {
-    "dbConfig": {
-      "host": "prod-db-server",
-      "port"
-    },
-    "credit": {
-      "initialDays": 30
-    }
+  "dbUser" : {
+    "host" : "localhost"
   }
 }

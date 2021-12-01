@@ -1,4 +1,4 @@
-const db = require('./../../todos')
+const db = require("./../../todos")
 
 module.exports = (req, res) => {
   res.send(req.body)
