@@ -1,6 +1,12 @@
 import db from "./../../todos.json"
 import fs from "fs"
 
+// in request
+// get uuid of item from params /:uuid
+// ===============
+// in response
+// return string about success deleting
+
 export default (req, res) => {
   try {
     if (!req.params.uuid) throw { message: "bad request", status: 400 }
@@ -10,6 +16,8 @@ export default (req, res) => {
     fs.writeFileSync("todos.json", JSON.stringify(db))
     res.json({ data: "success delete", status: 201 })
   } catch (err) {
-    err.message ? res.json(err) : res.json({ message: "bad request", status: 400 })
+    err.message
+      ? res.json({ error: err })
+      : res.json({ message: "bad request", status: 400 })
   }
 }
