@@ -3,8 +3,6 @@ import fs from "fs"
 
 export default (req, res) => {
   try {
-    console.log("req.params", req.params)
-    console.log("req.body", req.body)
     if (!(req.body.name || req.body.status))
       throw { message: "empty params", status: 401 }
     if (!req.params.uuid) throw { message: "bad request", status: 400 }
@@ -31,7 +29,6 @@ export default (req, res) => {
     fs.writeFileSync("todos.json", JSON.stringify(db))
     res.json({ data: item, status: 200 })
   } catch (err) {
-    console.log(err)
     err.message ? res.json(err) : res.json({ message: "bad request", status: 400 })
   }
 }
