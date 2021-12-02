@@ -10,8 +10,7 @@ and for more comfortable you can use `Postman`
 npm i
 npm start
 ```
-`npm start` this script run comand `nodemon --experimental-json-modules index.js`, 
->
+`npm start` this script run comand `nodemon --experimental-json-modules index.js`
 If you wanna deploy this, you need create script with:
 `npm --experimental-json-modules index.js` command
 
