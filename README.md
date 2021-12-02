@@ -12,4 +12,4 @@ npm start
 ```
 
 > If you wanna use other port, althow i wrote `3000` by default, if this env is not defined, you can create `.env` file in root folder(back-end-basic)
-> and write `PORT=YOUR_PORT_NUMBER` or just hardcode the const PORT in `index.js` :)
+> and write `PORT=YOUR_PORT_NUMBER` or just hardcode the `const PORT` in `index.js` :)
