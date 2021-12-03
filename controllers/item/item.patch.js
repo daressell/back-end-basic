@@ -11,35 +11,33 @@ import fs from "fs"
 
 export default (req, res) => {
   try {
-    if (!(req.body.name || req.body.status))
-      throw { message: "empty params", status: 401 }
-    if (!req.params.uuid) throw { message: "bad request", status: 400 }
+    console.log("req.body", req.body)
+    console.log("req.body", typeof req.body.status)
+    if (!(req.body.name || typeof req.body.status === "boolean")) throw "empty params"
+    if (!req.params.uuid) throw "bad request"
     if (!db.items) db.items = []
 
     if (db.items.find((item) => item.name === req.body.name)) {
-      throw { message: "This name exists", status: 400 }
+      throw "This name exists"
     }
     const item = db.items.find((item) => item.uuid === req.params.uuid)
-    const itemIndex = db.items.findIndex(
-      (item) => item.uuid === req.params.uuid
-    )
-    if (!item.name) throw { message: "item not found", status: 300 }
-    if (req.body.status) {
-      const status = req.body.status === "true"
+    const itemIndex = db.items.findIndex((item) => item.uuid === req.params.uuid)
+    if (!item.name) throw "item not found"
+    console.log("req.body.status", req.body.status)
+    if (typeof req.body.status !== "undefined") {
+      const status = req.body.status
       item.status = status
     }
     if (req.body.name) {
-      if (req.body.name.length < 2)
-        throw { message: "Need more symbols then 1", status: 400 }
+      if (req.body.name.length < 2) throw "Need more symbols then 1"
       item.name = req.body.name
     }
     item.updatedAt = new Date()
     db.items[itemIndex] = item
     fs.writeFileSync("todos.json", JSON.stringify(db))
-    res.json({ data: item, status: 200 })
+    res.send({ item }, 200)
   } catch (err) {
-    err.message
-      ? res.json({ error: err })
-      : res.json({ message: "bad request", status: 400 })
+    const message = err || "bad request"
+    res.status(400).json({ message })
   }
 }

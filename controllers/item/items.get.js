@@ -13,32 +13,32 @@ import db from "./../../todos.json"
 
 export default (req, res) => {
   try {
+    let page = 1
+    let pageSize = 5
     let items = [...db.items]
+    let countOfItems = items.length
     let filterBy = req.query.filterBy || ""
     if (filterBy === "done") filterBy = true
     else if (filterBy === "undone") filterBy = false
     else filterBy = "all"
     const sortBy = req.query.sortBy || "asc"
-    const page = parseInt(req.query.page) || 1
-    const pageSize = parseInt(req.query.pageSize) || 5
-    filterBy !== "all" &&
-      (items = items.filter((item) => item.status === filterBy))
+    page = parseInt(req.query.page) || 1
+    pageSize = parseInt(req.query.pageSize) || 5
+    filterBy !== "all" && (items = items.filter((item) => item.status === filterBy))
     sortBy === "asc"
       ? (items = items.sort((a, b) => {
-          if (a.updatedAt > b.updatedAt) return 1
+          if (a.createdAt > b.createdAt) return 1
           else return -1
         }))
       : (items = items.sort((a, b) => {
-          if (a.updatedAt > b.updatedAt) return -1
+          if (a.createdAt > b.createdAt) return -1
           else return 1
         }))
-    const countOfItems = items.length
+    countOfItems = items.length
     items = items.slice((page - 1) * pageSize, page * pageSize)
-    res.json({ data: { items, countOfItems }, status: 200 })
+    res.send({ items, countOfItems }, 200)
   } catch (err) {
-    console.log(err)
-    err.message
-      ? res.json({ error: err })
-      : res.json({ message: "bad request", status: 400 })
+    const message = err || "bad request"
+    res.status(400).json({ message })
   }
 }

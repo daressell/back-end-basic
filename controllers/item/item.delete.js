@@ -9,15 +9,14 @@ import fs from "fs"
 
 export default (req, res) => {
   try {
-    if (!req.params.uuid) throw { message: "bad request", status: 400 }
-    const items = db.items.map((item) => item.uuid !== req.params.uuid)
-    if (items === db.items) throw { message: "item not found", status: 300 }
+    if (!req.params.uuid) throw "bad request"
+    const items = db.items.filter((item) => item.uuid !== req.params.uuid)
+    if (items === db.items) throw "item not found"
     db.items = items
     fs.writeFileSync("todos.json", JSON.stringify(db))
-    res.json({ data: "success delete", status: 201 })
+    res.send("success delete", 200)
   } catch (err) {
-    err.message
-      ? res.json({ error: err })
-      : res.json({ message: "bad request", status: 400 })
+    const message = err || "bad request"
+    res.status(400).json({ message })
   }
 }
