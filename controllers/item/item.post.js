@@ -10,7 +10,6 @@ export default async (req, res) => {
   try {
     if (!req.body.name) throw "Bad request body"
     const newItem = await Item.create(req.body)
-    console.log("try")
     res.send({ newItem }, 200)
   } catch (err) {
     if (err.errors) res.status(400).json({ message: err.errors[0].message })

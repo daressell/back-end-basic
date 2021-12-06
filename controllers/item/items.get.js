@@ -16,22 +16,22 @@ const Op = Sequelize.Op
 export default async (req, res) => {
   try {
     let filterBy = req.query.filterBy || "all"
-    if (filterBy === "done") filterBy = true
-    else if (filterBy === "undone") filterBy = false
-    else filterBy = "all"
     const sortBy = req.query.sortBy || "asc"
     const page = parseInt(req.query.page) || 1
     const pageSize = parseInt(req.query.pageSize) || 5
 
-    console.log(filterBy, "filterBy")
+    if (filterBy === "done") filterBy = true
+    else if (filterBy === "undone") filterBy = false
+    else filterBy = "all"
+
     let itemsOnPage
-    if (filterBy === "all")
+    if (filterBy === "all") {
       itemsOnPage = await Item.findAndCountAll({
         limit: pageSize,
         offset: (page - 1) * pageSize,
         order: [["createdAt", sortBy]],
       })
-    else {
+    } else {
       itemsOnPage = await Item.findAndCountAll({
         limit: pageSize,
         offset: (page - 1) * pageSize,
