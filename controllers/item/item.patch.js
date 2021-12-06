@@ -28,7 +28,5 @@ export default async (req, res) => {
       const message = err || "bad request"
       res.status(400).json({ message })
     }
-    // const message = err || "bad request"
-    // res.status(400).json({ message })
   }
 }
