@@ -1,5 +1,4 @@
-import db from "./../../todos.json"
-import fs from "fs"
+import Item from "./../../models/item.js"
 
 // in request
 // get uuid of item from params /:uuid
@@ -9,35 +8,27 @@ import fs from "fs"
 // in response
 // return update item
 
-export default (req, res) => {
+export default async (req, res) => {
   try {
-    console.log("req.body", req.body)
-    console.log("req.body", typeof req.body.status)
-    if (!(req.body.name || typeof req.body.status === "boolean")) throw "empty params"
-    if (!req.params.uuid) throw "bad request"
-    if (!db.items) db.items = []
+    console.log()
+    const name = req.body.name
+    const status = req.body.status
+    console.log(status)
+    if (!name && typeof status !== "boolean") throw "Bad request body"
+    const item = await Item.findByPk(req.params.uuid)
 
-    if (db.items.find((item) => item.name === req.body.name)) {
-      throw "This name exists"
-    }
-    const item = db.items.find((item) => item.uuid === req.params.uuid)
-    const itemIndex = db.items.findIndex((item) => item.uuid === req.params.uuid)
-    if (!item.name) throw "item not found"
-    console.log("req.body.status", req.body.status)
-    if (typeof req.body.status !== "undefined") {
-      const status = req.body.status
-      item.status = status
-    }
-    if (req.body.name) {
-      if (req.body.name.length < 2) throw "Need more symbols then 1"
-      item.name = req.body.name
-    }
-    item.updatedAt = new Date()
-    db.items[itemIndex] = item
-    fs.writeFileSync("todos.json", JSON.stringify(db))
+    if (!item) throw "Item not founded"
+
+    name && (await item.update({ name }))
+    typeof status === "boolean" && (await item.update({ status }))
     res.send({ item }, 200)
   } catch (err) {
-    const message = err || "bad request"
-    res.status(400).json({ message })
+    if (err.errors) res.status(400).json({ message: err.errors[0].message })
+    else {
+      const message = err || "bad request"
+      res.status(400).json({ message })
+    }
+    // const message = err || "bad request"
+    // res.status(400).json({ message })
   }
 }
