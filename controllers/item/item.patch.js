@@ -23,7 +23,7 @@ export default async (req, res) => {
       await item.update({ status })
     else throw "Bad request body"
 
-    res.send({ item }, 200)
+    res.send("success edit", 200)
   } catch (err) {
     if (err.errors) res.status(400).json({ message: err.errors[0].message })
     else {
