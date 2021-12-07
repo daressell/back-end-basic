@@ -1,17 +1,17 @@
-import Item from "../../models/item.js"
+import Todo from "../../models/todo.js"
 import { Router } from "express"
 const router = Router()
 
 // in request
-// get uuid of item from params /:uuid
+// get uuid of todo from params /:uuid
 // ===============
 // in response
 // return string about success deleting
 
-export default router.delete("/item/:uuid", async (req, res) => {
+export default router.delete("/todo/:uuid", async (req, res) => {
   try {
-    const item = await Item.findByPk(req.params.uuid)
-    if (item) (await item.destroy()) && res.send("success delete", 200)
+    const todo = await Todo.findByPk(req.params.uuid)
+    if (todo) (await todo.destroy()) && res.send("success delete", 200)
     else throw "Item not founded"
   } catch (err) {
     if (err.errors) res.status(400).json({ message: err.errors[0].message })

@@ -3,7 +3,7 @@
 import { Sequelize } from "sequelize"
 import sequelize from "./index.js"
 
-export default sequelize.define("item", {
+export default sequelize.define("Todo", {
   uuid: {
     type: Sequelize.UUID,
     defaultValue: Sequelize.UUIDV4,

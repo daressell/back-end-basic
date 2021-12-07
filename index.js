@@ -16,5 +16,5 @@ recursive(`./routes`).forEach(async (file) => {
 })
 
 app.listen(PORT, () => {
-  console.log("start server")
+  console.log("start server on port", PORT)
 })

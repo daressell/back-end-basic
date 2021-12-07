@@ -1,4 +1,4 @@
-import Item from "../../models/item.js"
+import Todo from "../../models/todo.js"
 import { Router } from "express"
 const router = Router()
 
@@ -7,13 +7,13 @@ const router = Router()
 // pageSize
 // filterBy(done, undone)
 // sortBy(desc, asc)
-// -if noone params, return frist 5 asc items
+// -if noone params, return frist 5 asc todos
 // ===============
 // in response
-// return object with array of items - data.items
-// and count of filtered items - data.countOfItems
+// return object with array of todos - data.todos
+// and count of filtered todos - data.countOfTodos
 
-export default router.get("/items", async (req, res) => {
+export default router.get("/todos", async (req, res) => {
   try {
     let filterBy = req.query.filterBy || "all"
     const sortBy = req.query.sortBy || "asc"
@@ -24,15 +24,15 @@ export default router.get("/items", async (req, res) => {
     else if (filterBy === "undone") filterBy = false
     else filterBy = "all"
 
-    let itemsOnPage
+    let todosOnPage
     if (filterBy === "all") {
-      itemsOnPage = await Item.findAndCountAll({
+      todosOnPage = await Todo.findAndCountAll({
         limit: pageSize,
         offset: (page - 1) * pageSize,
         order: [["createdAt", sortBy]],
       })
     } else {
-      itemsOnPage = await Item.findAndCountAll({
+      todosOnPage = await Todo.findAndCountAll({
         limit: pageSize,
         offset: (page - 1) * pageSize,
         where: {
@@ -42,8 +42,9 @@ export default router.get("/items", async (req, res) => {
       })
     }
 
-    res.send({ items: itemsOnPage.rows, countOfItems: itemsOnPage.count }, 200)
+    res.send({ items: todosOnPage.rows, countOfItems: todosOnPage.count }, 200)
   } catch (err) {
+    console.log(err)
     if (err.errors) res.status(400).json({ message: err.errors[0].message })
     else {
       const message = err || "bad request"

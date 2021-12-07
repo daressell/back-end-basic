@@ -1,28 +1,28 @@
-import Item from "../../models/item.js"
+import Todo from "../../models/todo.js"
 import { Router } from "express"
 const router = Router()
 
 // in request
-// get uuid of item from params /:uuid
+// get uuid of todo from params /:uuid
 // cant work without name and status, return error
 // can work with only name or only status
 // ===============
 // in response
-// return update item
+// return update todo
 
-export default router.patch("/item/:uuid", async (req, res) => {
+export default router.patch("/todo/:uuid", async (req, res) => {
   try {
     const status = req.body.status
 
-    const item = await Item.findByPk(req.params.uuid)
+    const todo = await Todo.findByPk(req.params.uuid)
 
-    if (!item) throw "Item not founded"
+    if (!todo) throw "Todo not founded"
 
     if (req.body.name) {
       const name = req.body.name.trim().replace(/\s+/g, " ")
-      await item.update({ name })
+      await todo.update({ name })
     } else if (typeof status === "boolean" || status === "true" || status === "false")
-      await item.update({ status })
+      await todo.update({ status })
     else throw "Bad request body"
 
     res.send("success edit", 200)

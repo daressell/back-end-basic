@@ -1,4 +1,4 @@
-import Item from "../../models/item.js"
+import Todo from "../../models/todo.js"
 import { Router } from "express"
 const router = Router()
 
@@ -6,16 +6,16 @@ const router = Router()
 // get only name(has validation inside)
 // ===============
 // in response
-// return new item
+// return new todo
 
-export default router.post("/item", async (req, res) => {
+export default router.post("/todo", async (req, res) => {
   try {
     if (!req.body.name) throw "Bad request body"
 
     const name = req.body.name.trim().replace(/\s+/g, " ")
-    const newItem = await Item.create({ name })
+    const newTodo = await Todo.create({ name })
 
-    res.send({ newItem }, 200)
+    res.send({ newTodo }, 200)
   } catch (err) {
     if (err.errors) return res.status(400).json({ message: err.errors[0].message })
     res.status(400).json({ message: err || "bad request" })
