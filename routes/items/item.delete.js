@@ -1,7 +1,7 @@
-import Todo from "../../models/todo.js"
+import db from "../../models/index.js"
 import { Router } from "express"
 const router = Router()
-
+// console.log(db.Todo)
 // in request
 // get uuid of todo from params /:uuid
 // ===============
@@ -10,7 +10,7 @@ const router = Router()
 
 export default router.delete("/todo/:uuid", async (req, res) => {
   try {
-    const todo = await Todo.findByPk(req.params.uuid)
+    const todo = await db.todo.findByPk(req.params.uuid)
     if (todo) (await todo.destroy()) && res.send("success delete", 200)
     else throw "Item not founded"
   } catch (err) {

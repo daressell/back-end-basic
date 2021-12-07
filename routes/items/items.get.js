@@ -14,6 +14,7 @@ const router = Router()
 // and count of filtered todos - data.countOfTodos
 
 export default router.get("/todos", async (req, res) => {
+  console.log(Todo)
   try {
     let filterBy = req.query.filterBy || "all"
     const sortBy = req.query.sortBy || "asc"
