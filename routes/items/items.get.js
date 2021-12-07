@@ -1,6 +1,6 @@
-import Item from "./../../models/item.js"
-import Sequelize from "sequelize"
-const Op = Sequelize.Op
+import Item from "../../models/item.js"
+import { Router } from "express"
+const router = Router()
 
 // in request
 // page
@@ -13,7 +13,7 @@ const Op = Sequelize.Op
 // return object with array of items - data.items
 // and count of filtered items - data.countOfItems
 
-export default async (req, res) => {
+export default router.get("/items", async (req, res) => {
   try {
     let filterBy = req.query.filterBy || "all"
     const sortBy = req.query.sortBy || "asc"
@@ -50,4 +50,4 @@ export default async (req, res) => {
       res.status(400).json({ message })
     }
   }
-}
+})

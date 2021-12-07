@@ -1,4 +1,6 @@
-import Item from "./../../models/item.js"
+import Item from "../../models/item.js"
+import { Router } from "express"
+const router = Router()
 
 // in request
 // get uuid of item from params /:uuid
@@ -6,7 +8,7 @@ import Item from "./../../models/item.js"
 // in response
 // return string about success deleting
 
-export default async (req, res) => {
+export default router.delete("/item/:uuid", async (req, res) => {
   try {
     const item = await Item.findByPk(req.params.uuid)
     if (item) (await item.destroy()) && res.send("success delete", 200)
@@ -18,4 +20,4 @@ export default async (req, res) => {
       res.status(400).json({ message })
     }
   }
-}
+})

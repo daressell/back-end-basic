@@ -1,4 +1,6 @@
-import Item from "./../../models/item.js"
+import Item from "../../models/item.js"
+import { Router } from "express"
+const router = Router()
 
 // in request
 // get uuid of item from params /:uuid
@@ -8,7 +10,7 @@ import Item from "./../../models/item.js"
 // in response
 // return update item
 
-export default async (req, res) => {
+export default router.patch("/item/:uuid", async (req, res) => {
   try {
     const status = req.body.status
 
@@ -31,4 +33,4 @@ export default async (req, res) => {
       res.status(400).json({ message })
     }
   }
-}
+})
