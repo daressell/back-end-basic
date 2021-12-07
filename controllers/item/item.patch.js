@@ -10,15 +10,16 @@ import Item from "./../../models/item.js"
 
 export default async (req, res) => {
   try {
-    const name = req.body.name
     const status = req.body.status
 
     const item = await Item.findByPk(req.params.uuid)
 
     if (!item) throw "Item not founded"
 
-    if (name) await item.update({ name })
-    else if (typeof status === "boolean" || status === "true" || status === "false")
+    if (req.body.name) {
+      const name = req.body.name.trim().replace(/\s+/g, " ")
+      await item.update({ name })
+    } else if (typeof status === "boolean" || status === "true" || status === "false")
       await item.update({ status })
     else throw "Bad request body"
 
