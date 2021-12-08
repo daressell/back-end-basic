@@ -1,15 +1,15 @@
 "use strict"
 
 module.exports = (sequelize, Sequelize) => {
-  const Todo = sequelize.define(
-    "Todo",
+  const User = sequelize.define(
+    "User",
     {
       uuid: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
         primaryKey: true,
       },
-      name: {
+      login: {
         type: Sequelize.STRING,
         allowNull: false,
         validate: {
@@ -17,14 +17,21 @@ module.exports = (sequelize, Sequelize) => {
           len: [2, 100],
         },
       },
-      status: {
-        type: Sequelize.BOOLEAN,
-        defaultValue: false,
-        field: "status",
+      password: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        validate: {
+          len: [2, 100],
+        },
       },
       createdAt: {
         type: Sequelize.DATE,
         field: "created_at",
+      },
+      refreshToken: {
+        type: Sequelize.STRING,
+        defaultValue: "token",
+        field: "refresh_token",
       },
       updatedAt: {
         type: Sequelize.DATE,
@@ -32,11 +39,11 @@ module.exports = (sequelize, Sequelize) => {
       },
     },
     {
-      tableName: "todos",
+      tableName: "users",
     }
   )
-  Todo.associate = (models) => {
-    Todo.belongsTo(models.User)
+  User.associate = (models) => {
+    User.hasMany(models.Todo)
   }
-  return Todo
+  return User
 }

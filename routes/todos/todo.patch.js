@@ -14,7 +14,7 @@ module.exports = router.patch("/todo/:uuid", async (req, res) => {
   try {
     const status = req.body.status
 
-    const todo = await models.todo.findByPk(req.params.uuid)
+    const todo = await models.Todo.findByPk(req.params.uuid)
 
     if (!todo) throw "Todo not founded"
 

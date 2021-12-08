@@ -9,7 +9,7 @@ const router = express.Router()
 
 module.exports = router.delete("/todo/:uuid", async (req, res) => {
   try {
-    const todo = await models.todo.findByPk(req.params.uuid)
+    const todo = await models.Todo.findByPk(req.params.uuid)
     if (todo) (await todo.destroy()) && res.send("success delete", 200)
     else throw "Item not founded"
   } catch (err) {

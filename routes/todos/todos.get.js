@@ -26,13 +26,13 @@ module.exports = router.get("/todos", async (req, res) => {
 
     let todosOnPage
     if (filterBy === "all") {
-      todosOnPage = await models.todo.findAndCountAll({
+      todosOnPage = await models.Todo.findAndCountAll({
         limit: pageSize,
         offset: (page - 1) * pageSize,
         order: [["createdAt", sortBy]],
       })
     } else {
-      todosOnPage = await models.todo.findAndCountAll({
+      todosOnPage = await models.Todo.findAndCountAll({
         limit: pageSize,
         offset: (page - 1) * pageSize,
         where: {
