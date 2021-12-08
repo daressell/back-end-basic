@@ -1,16 +1,15 @@
-import Todo from "../../models/todo.js"
-import { Router } from "express"
-const router = Router()
-
+const models = require("../../models/")
+const express = require("express")
+const router = express.Router()
 // in request
 // get uuid of todo from params /:uuid
 // ===============
 // in response
 // return string about success deleting
 
-export default router.delete("/todo/:uuid", async (req, res) => {
+module.exports = router.delete("/todo/:uuid", async (req, res) => {
   try {
-    const todo = await Todo.findByPk(req.params.uuid)
+    const todo = await models.todo.findByPk(req.params.uuid)
     if (todo) (await todo.destroy()) && res.send("success delete", 200)
     else throw "Item not founded"
   } catch (err) {

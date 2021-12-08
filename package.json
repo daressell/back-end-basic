@@ -16,7 +16,7 @@
   "bugs": {
     "url": "https://github.com/daressell/back-end-basic/issues"
   },
-  "type": "module",
+  "type": "commonjs",
   "homepage": "https://github.com/daressell/back-end-basic#readme",
   "dependencies": {
     "babel": "^6.23.0",

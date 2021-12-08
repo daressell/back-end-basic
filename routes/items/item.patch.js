@@ -1,6 +1,6 @@
-import Todo from "../../models/todo.js"
-import { Router } from "express"
-const router = Router()
+const models = require("../../models/")
+const express = require("express")
+const router = express.Router()
 
 // in request
 // get uuid of todo from params /:uuid
@@ -10,11 +10,13 @@ const router = Router()
 // in response
 // return update todo
 
-export default router.patch("/todo/:uuid", async (req, res) => {
+module.exports = router.patch("/todo/:uuid", async (req, res) => {
   try {
+    console.log("qweqweqweqwe")
     const status = req.body.status
 
-    const todo = await Todo.findByPk(req.params.uuid)
+    const todo = await models.todo.findByPk(req.params.uuid)
+    console.log(todo)
 
     if (!todo) throw "Todo not founded"
 
