@@ -12,11 +12,9 @@ const router = express.Router()
 
 module.exports = router.patch("/todo/:uuid", async (req, res) => {
   try {
-    console.log("qweqweqweqwe")
     const status = req.body.status
 
     const todo = await models.todo.findByPk(req.params.uuid)
-    console.log(todo)
 
     if (!todo) throw "Todo not founded"
 

@@ -14,7 +14,6 @@ const router = express.Router()
 // and count of filtered todos - data.countOfTodos
 
 module.exports = router.get("/todos", async (req, res) => {
-  console.log(models.todo)
   try {
     let filterBy = req.query.filterBy || "all"
     const sortBy = req.query.sortBy || "asc"

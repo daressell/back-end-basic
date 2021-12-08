@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon --experimental-modules index.js"
+    "start": "nodemon index.js"
   },
   "repository": {
     "type": "git",
@@ -27,10 +27,10 @@
     "pg-hstore": "^2.3.4",
     "recursive-readdir-sync": "^1.0.6",
     "sequelize": "^6.12.0-beta.1",
+    "sequelize-cli": "^6.3.0",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "babel-register": "^6.26.0",
     "nodemon": "^2.0.15"
   }
 }
