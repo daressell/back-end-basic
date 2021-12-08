@@ -1,6 +1,6 @@
-import Todo from "../../models/todo.js"
-import { Router } from "express"
-const router = Router()
+const models = require("../../models/")
+const express = require("express")
+const router = express.Router()
 
 // in request
 // page
@@ -13,8 +13,8 @@ const router = Router()
 // return object with array of todos - data.todos
 // and count of filtered todos - data.countOfTodos
 
-export default router.get("/todos", async (req, res) => {
-  console.log(Todo)
+module.exports = router.get("/todos", async (req, res) => {
+  console.log(models.todo)
   try {
     let filterBy = req.query.filterBy || "all"
     const sortBy = req.query.sortBy || "asc"
@@ -27,13 +27,13 @@ export default router.get("/todos", async (req, res) => {
 
     let todosOnPage
     if (filterBy === "all") {
-      todosOnPage = await Todo.findAndCountAll({
+      todosOnPage = await models.todo.findAndCountAll({
         limit: pageSize,
         offset: (page - 1) * pageSize,
         order: [["createdAt", sortBy]],
       })
     } else {
-      todosOnPage = await Todo.findAndCountAll({
+      todosOnPage = await models.todo.findAndCountAll({
         limit: pageSize,
         offset: (page - 1) * pageSize,
         where: {
@@ -48,6 +48,7 @@ export default router.get("/todos", async (req, res) => {
     console.log(err)
     if (err.errors) res.status(400).json({ message: err.errors[0].message })
     else {
+      console.log(err)
       const message = err || "bad request"
       res.status(400).json({ message })
     }

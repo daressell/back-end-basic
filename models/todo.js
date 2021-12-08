@@ -1,7 +1,7 @@
 "use strict"
 
-export default (sequelize, Sequelize) => {
-  return sequelize.define("todo", {
+module.exports = (sequelize, Sequelize) => {
+  const todo = sequelize.define("todo", {
     uuid: {
       type: Sequelize.UUID,
       defaultValue: Sequelize.UUIDV4,
@@ -29,4 +29,5 @@ export default (sequelize, Sequelize) => {
       field: "updated_at",
     },
   })
+  return todo
 }

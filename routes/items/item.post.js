@@ -1,6 +1,6 @@
-import Todo from "../../models/todo.js"
-import { Router } from "express"
-const router = Router()
+const models = require("../../models/")
+const express = require("express")
+const router = express.Router()
 
 // in request
 // get only name(has validation inside)
@@ -8,12 +8,12 @@ const router = Router()
 // in response
 // return new todo
 
-export default router.post("/todo", async (req, res) => {
+module.exports = router.post("/todo", async (req, res) => {
   try {
     if (!req.body.name) throw "Bad request body"
 
     const name = req.body.name.trim().replace(/\s+/g, " ")
-    const newTodo = await Todo.create({ name })
+    const newTodo = await models.todo.create({ name })
 
     res.send({ newTodo }, 200)
   } catch (err) {
