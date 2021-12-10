@@ -1,6 +1,6 @@
-const models = require("../../models/")
-const express = require("express")
-const router = express.Router()
+const models = require("../../models/");
+const express = require("express");
+const router = express.Router();
 
 // in request
 // get uuid of todo from params /:uuid
@@ -12,25 +12,28 @@ const router = express.Router()
 
 module.exports = router.patch("/todo/:uuid", async (req, res) => {
   try {
-    const status = req.body.status
+    const status = req.body.status;
+    const name = req.body.name?.trim().replace(/\s+/g, " ");
 
-    const todo = await models.Todo.findByPk(req.params.uuid)
+    if (!status && !name) throw new Error("no data");
 
-    if (!todo) throw "Todo not founded"
+    const todo = await models.Todo.findOne({
+      where: {
+        uuid: req.params.uuid,
+        user_id: res.locals.userId,
+      },
+    });
 
-    if (req.body.name) {
-      const name = req.body.name.trim().replace(/\s+/g, " ")
-      await todo.update({ name })
-    } else if (typeof status === "boolean" || status === "true" || status === "false")
-      await todo.update({ status })
-    else throw "Bad request body"
+    if (!todo) throw "Todo not founded";
 
-    res.send("success edit", 200)
+    await todo.update({ status, name });
+
+    res.send("success edit", 200);
   } catch (err) {
-    if (err.errors) res.status(400).json({ message: err.errors[0].message })
+    if (err.errors) res.status(400).json({ message: err.errors[0].message });
     else {
-      const message = err || "bad request"
-      res.status(400).json({ message })
+      const message = err || "bad request";
+      res.status(400).json({ message });
     }
   }
-})
+});

@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 
 module.exports = (sequelize, Sequelize) => {
   const Todo = sequelize.define(
@@ -34,14 +34,14 @@ module.exports = (sequelize, Sequelize) => {
     {
       tableName: "todos",
     }
-  )
+  );
   Todo.associate = (models) => {
     Todo.belongsTo(models.User, {
       foreignKey: {
         type: Sequelize.UUID,
         field: "user_id",
       },
-    })
-  }
-  return Todo
-}
+    });
+  };
+  return Todo;
+};

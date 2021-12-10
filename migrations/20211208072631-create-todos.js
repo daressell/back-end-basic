@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
@@ -26,9 +26,9 @@ module.exports = {
         type: Sequelize.DATE,
         field: "updated_at",
       },
-    })
+    });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable("todos")
+    await queryInterface.dropTable("todos");
   },
-}
+};

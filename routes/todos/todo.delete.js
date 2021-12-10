@@ -1,6 +1,6 @@
-const models = require("../../models/")
-const express = require("express")
-const router = express.Router()
+const models = require("../../models/");
+const express = require("express");
+const router = express.Router();
 // in request
 // get uuid of todo from params /:uuid
 // ===============
@@ -9,16 +9,18 @@ const router = express.Router()
 
 module.exports = router.delete("/todo/:uuid", async (req, res) => {
   try {
-    const user = await models.User.findByPk(req.userId)
-    user.removeTodo(req.params.uuid) // mb not working
-    const todo = await models.Todo.findByPk(req.params.uuid)
-    if (todo) (await todo.destroy()) && res.send("success delete", 200)
-    else throw "Item not founded"
+    const todo = await models.Todo.findOne({
+      where: { uuid: req.params.uuid, user_id: res.locals.userId },
+    });
+    if (!todo) throw errors.NotFound("Item not founded");
+
+    await todo.destroy();
+    res.sendStatus(204);
   } catch (err) {
-    if (err.errors) res.status(400).json({ message: err.errors[0].message })
+    if (err.errors) res.status(400).json({ message: err.errors[0].message });
     else {
-      const message = err || "bad request"
-      res.status(400).json({ message })
+      const message = err || "bad request";
+      res.status(500).json({ message });
     }
   }
-})
+});

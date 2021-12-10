@@ -28,11 +28,6 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.DATE,
         field: "created_at",
       },
-      refreshToken: {
-        type: Sequelize.STRING,
-        defaultValue: "token",
-        field: "refresh_token",
-      },
       updatedAt: {
         type: Sequelize.DATE,
         field: "updated_at",
