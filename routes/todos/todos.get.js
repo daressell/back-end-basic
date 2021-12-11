@@ -1,7 +1,7 @@
 const models = require("../../models/");
 const express = require("express");
-const { sequelize } = require("../../models/");
 const router = express.Router();
+const auth = require("./../../middleware/authorize");
 
 // in request
 // page
@@ -14,7 +14,7 @@ const router = express.Router();
 // return object with array of todos - data.todos
 // and count of filtered todos - data.countOfTodos
 
-module.exports = router.get("/todos", async (req, res) => {
+module.exports = router.get("/todos", auth, async (req, res, next) => {
   try {
     const filterBy = req.query.filterBy;
     const sortBy = req.query.sortBy || "asc";
@@ -34,11 +34,6 @@ module.exports = router.get("/todos", async (req, res) => {
 
     res.send({ items: todosData.rows, countOfTodos: todosData.count }, 200);
   } catch (err) {
-    console.log(err);
-    if (err.errors) res.status(400).json({ message: err.errors[0].message });
-    else {
-      const message = err || "bad request";
-      res.status(400).json({ message });
-    }
+    next(err);
   }
 });

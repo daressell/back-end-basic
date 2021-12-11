@@ -1,6 +1,7 @@
 const models = require("../../models/");
 const express = require("express");
 const router = express.Router();
+const auth = require("./../../middleware/authorize");
 
 // in request
 // get uuid of todo from params /:uuid
@@ -10,7 +11,7 @@ const router = express.Router();
 // in response
 // return update todo
 
-module.exports = router.patch("/todo/:uuid", async (req, res) => {
+module.exports = router.patch("/todo/:uuid", auth, async (req, res, next) => {
   try {
     const status = req.body.status;
     const name = req.body.name?.trim().replace(/\s+/g, " ");
@@ -24,16 +25,12 @@ module.exports = router.patch("/todo/:uuid", async (req, res) => {
       },
     });
 
-    if (!todo) throw "Todo not founded";
+    if (!todo) throw new Error("Todo not founded");
 
     await todo.update({ status, name });
 
     res.send("success edit", 200);
   } catch (err) {
-    if (err.errors) res.status(400).json({ message: err.errors[0].message });
-    else {
-      const message = err || "bad request";
-      res.status(400).json({ message });
-    }
+    next(err);
   }
 });
