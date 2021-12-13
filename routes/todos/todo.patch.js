@@ -21,6 +21,8 @@ module.exports = router.patch("/todo/:uuid", auth, async (req, res, next) => {
     if (name && (name.length < 2 || name.length > 100))
       throw new Error("Need more, than 1 symbol and less, than 100");
 
+    if (name && !name.match(/[\w]/)) throw new Error("meaningless content");
+
     const checkUniq =
       name &&
       (await models.Todo.findOne({

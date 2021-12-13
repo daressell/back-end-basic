@@ -13,15 +13,14 @@ module.exports = router.post("/registration", async (req, res, next) => {
     if (!login || !password) throw new Error("bad body properties");
 
     if (!password.match(/^(?=.*[A-Za-z])(?=.*\d)[\w]{8,100}$/))
-      throw new Error("bad password");
+      throw new Error("need more difficult password, uisng only a-b and numbers");
 
     if (password !== confirm) throw new Error("confirm and passwor must be equal");
 
-    if (!login.match(/^(?=.*[A-Za-z])(?=.*\d)[\w]{4,100}$/))
-      throw new Error("bad name validation");
+    if (!login.match(/^(?=.*[A-Za-z])[\w]{4,100}$/))
+      throw new Error("bad name validation, need 4-100 symbols and use only a-b and numbers");
 
-    if (await models.User.findOne({ where: { login } }))
-      throw new Error("user exist yet");
+    if (await models.User.findOne({ where: { login } })) throw new Error("user exist yet");
 
     password = await bcrypt.hash(req.body.password, 10);
 

@@ -21,7 +21,7 @@ module.exports = router.post("/todo", auth, async (req, res, next) => {
     if (name.length < 2 || name.length > 100)
       throw new Error("Need more, than 1 symbol and less, than 100");
 
-    if (!name) throw new Error("bad name");
+    if (!name.match(/[\w]/)) throw new Error("meaningless content");
 
     const checkUniq = await models.Todo.findOne({
       where: {
