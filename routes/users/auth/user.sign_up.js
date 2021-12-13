@@ -6,26 +6,31 @@ const jwt = require("jsonwebtoken");
 
 module.exports = router.post("/registration", async (req, res, next) => {
   try {
-    if (!req.body.login || !req.body.password) throw new Error("bad body properties");
+    let password = req.body.password || "";
+    const confirm = req.body.confirm || "";
+    const login = req.body.login || "";
 
-    if (!req.body.login && !req.body.login.trim().replace(/\s+/g, " "))
-      throw new Error("Bad name validate");
+    if (!login || !password) throw new Error("bad body properties");
 
-    const password = await bcrypt.hash(req.body.password, 10);
-    const login = req.body.login;
-    if (models.User.findOne({ where: { login } })) throw new Error("user exist yet");
+    if (!password.match(/^(?=.*[A-Za-z])(?=.*\d)[\w]{8,100}$/))
+      throw new Error("bad password");
 
-    const newUser = await models.User.create({
+    if (password !== confirm) throw new Error("confirm and passwor must be equal");
+
+    if (!login.match(/^(?=.*[A-Za-z])(?=.*\d)[\w]{4,100}$/))
+      throw new Error("bad name validation");
+
+    if (await models.User.findOne({ where: { login } }))
+      throw new Error("user exist yet");
+
+    password = await bcrypt.hash(req.body.password, 10);
+
+    await models.User.create({
       login,
       password,
     });
 
-    const token = { userId: newUser.uuid };
-    const accessToken = jwt.sign(token, process.env.TOKEN_KEY, {
-      expiresIn: "2h",
-    });
-
-    res.send({ token: accessToken }, 200);
+    res.send("success registered", 200);
   } catch (err) {
     next(err);
   }

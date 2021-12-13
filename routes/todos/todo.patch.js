@@ -16,7 +16,21 @@ module.exports = router.patch("/todo/:uuid", auth, async (req, res, next) => {
     const status = req.body.status;
     const name = req.body.name?.trim().replace(/\s+/g, " ");
 
-    if (!status && !name) throw new Error("no data");
+    if (!(typeof status === "boolean") && !name) throw new Error("no data");
+
+    if (name && (name.length < 2 || name.length > 100))
+      throw new Error("Need more, than 1 symbol and less, than 100");
+
+    const checkUniq =
+      name &&
+      (await models.Todo.findOne({
+        where: {
+          name,
+          user_id: res.locals.userId,
+        },
+      }));
+
+    if (checkUniq) throw new Error("name must be uniq");
 
     const todo = await models.Todo.findOne({
       where: {

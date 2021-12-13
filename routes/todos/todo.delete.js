@@ -10,10 +10,10 @@ const auth = require("./../../middleware/authorize");
 
 module.exports = router.delete("/todo/:uuid", auth, async (req, res, next) => {
   try {
-    const todo = await models.Todo.findOne({
-      where: { uuid: req.params.uuid, user_id: res.locals.userId },
-    });
+    const todo = await models.Todo.findByPk(req.params.uuid);
     if (!todo) throw new Error("Item not founded");
+    const user = await models.User.findByPk(res.locals.userId);
+    if (!(await user.hasTodo(todo.uuid))) throw new Error("It is not you todo");
 
     await todo.destroy();
     res.sendStatus(204);

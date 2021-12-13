@@ -17,6 +17,20 @@ module.exports = router.post("/todo", auth, async (req, res, next) => {
       throw new Error("Bad request body");
 
     const name = req.body.name.trim().replace(/\s+/g, " ");
+
+    if (name.length < 2 || name.length > 100)
+      throw new Error("Need more, than 1 symbol and less, than 100");
+
+    if (!name) throw new Error("bad name");
+
+    const checkUniq = await models.Todo.findOne({
+      where: {
+        name,
+        user_id: res.locals.userId,
+      },
+    });
+    if (checkUniq) throw new Error("name must be uniq");
+
     const newTodo = await user.createTodo({ name });
 
     res.send({ newTodo }, 200);
