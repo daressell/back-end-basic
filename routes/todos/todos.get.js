@@ -2,6 +2,8 @@ const models = require("../../models/");
 const express = require("express");
 const router = express.Router();
 const auth = require("./../../middleware/authorize");
+const { sequelize } = require("../../models/");
+const { QueryTypes } = require("sequelize");
 
 // in request
 // page
