@@ -2,6 +2,9 @@ const models = require("../../models/");
 const express = require("express");
 const router = express.Router();
 const auth = require("./../../middleware/authorize");
+const { buildCheckFunction, oneOf, validationResult } = require("express-validator");
+const checkBody = buildCheckFunction(["body"]);
+const checkParams = buildCheckFunction(["params"]);
 
 // in request
 // get uuid of todo from params /:uuid
@@ -11,42 +14,53 @@ const auth = require("./../../middleware/authorize");
 // in response
 // return update todo
 
-module.exports = router.patch("/todo/:uuid", auth, async (req, res, next) => {
-  try {
-    const status = req.body.status;
-    const name = req.body.name?.trim().replace(/\s+/g, " ");
+module.exports = router.patch(
+  "/todo/:uuid",
+  auth,
+  checkParams("uuid").exists().isUUID().withMessage("bad data in uuid"),
+  oneOf([
+    checkBody("name").exists(),
+    checkBody("status")
+      .exists()
+      .isIn([true, false, "true", "false"])
+      .withMessage("bad data in status"),
+  ]),
+  checkBody("name")
+    .isLength({ min: 2, max: 100 })
+    .withMessage("Name need min symbols is 2 and max 100")
+    .matches(/^(?=.*[\w])/)
+    .withMessage("Login must be with 1 letter or 1 number minimum"),
+  async (req, res, next) => {
+    try {
+      validationResult(req).throw();
+      const status = req.body.status;
+      const name = req.body.name?.trim().replace(/\s+/g, " ");
 
-    if (!(typeof status === "boolean") && !name) throw new Error("no data");
+      const checkUniq =
+        name &&
+        (await models.Todo.findOne({
+          where: {
+            name,
+            user_id: res.locals.userId,
+          },
+        }));
 
-    if (name && (name.length < 2 || name.length > 100))
-      throw new Error("Need more, than 1 symbol and less, than 100");
+      if (checkUniq) throw new Error("name must be uniq");
 
-    if (name && !name.match(/[\w]/)) throw new Error("meaningless content");
-
-    const checkUniq =
-      name &&
-      (await models.Todo.findOne({
+      const todo = await models.Todo.findOne({
         where: {
-          name,
+          uuid: req.params.uuid,
           user_id: res.locals.userId,
         },
-      }));
+      });
 
-    if (checkUniq) throw new Error("name must be uniq");
+      if (!todo) throw new Error("Todo not founded");
 
-    const todo = await models.Todo.findOne({
-      where: {
-        uuid: req.params.uuid,
-        user_id: res.locals.userId,
-      },
-    });
+      await todo.update({ status, name });
 
-    if (!todo) throw new Error("Todo not founded");
-
-    await todo.update({ status, name });
-
-    res.send("success edit", 200);
-  } catch (err) {
-    next(err);
+      res.send("success edit", 200);
+    } catch (err) {
+      next(err);
+    }
   }
-});
+);

@@ -2,40 +2,54 @@ const models = require("../../models/");
 const express = require("express");
 const router = express.Router();
 const auth = require("./../../middleware/authorize");
-const { sequelize } = require("../../models/");
-const { QueryTypes } = require("sequelize");
+const { buildCheckFunction, validationResult } = require("express-validator");
+const checkQuery = buildCheckFunction(["query"]);
 
-// in request
-// page
-// pageSize
+// in request.query
+// page - numeric
+// pageSize - numeric
 // filterBy(done, undone)
 // sortBy(desc, asc)
-// -if noone params, return frist 5 asc todos
 // ===============
 // in response
-// return object with array of todos - data.todos
+// return object with array of todos on page - data.todos
 // and count of filtered todos - data.countOfTodos
 
-module.exports = router.get("/todos", auth, async (req, res, next) => {
-  try {
-    const filterBy = req.query.filterBy;
-    const sortBy = req.query.sortBy || "asc";
-    const page = parseInt(req.query.page) || 1;
-    const pageSize = parseInt(req.query.pageSize) || 5;
-    const todosWhere = { user_id: res.locals.userId };
+module.exports = router.get(
+  "/todos",
+  auth,
+  checkQuery("filterBy", "filterBy does not exist").exists(),
+  checkQuery("sortBy", "sortBy does not exist").exists(),
+  checkQuery("page")
+    .exists()
+    .withMessage("page does not exist")
+    .matches(/\d+$/)
+    .withMessage("page must be a number"),
+  checkQuery("pageSize")
+    .exists()
+    .withMessage("pageSize does not exist")
+    .matches(/\d+$/)
+    .withMessage("pageSize must be a number"),
+  async (req, res, next) => {
+    try {
+      validationResult(req).throw();
+      const { filterBy, sortBy, page, pageSize } = req.query;
 
-    filterBy === "done" && (todosWhere.status = "true");
-    filterBy === "undone" && (todosWhere.status = "false");
+      const todosQuery = {
+        where: { user_id: res.locals.userId },
+      };
+      todosQuery.order = [["createdAt", sortBy]];
 
-    const todosData = await models.Todo.findAndCountAll({
-      limit: pageSize,
-      offset: (page - 1) * pageSize,
-      where: todosWhere,
-      order: [["createdAt", sortBy]],
-    });
+      filterBy === "done" && (todosQuery.where.status = true);
+      filterBy === "undone" && (todosQuery.where.status = false);
+      todosQuery.limit = pageSize;
+      todosQuery.offset = (page - 1) * pageSize;
 
-    res.send({ items: todosData.rows, countOfTodos: todosData.count }, 200);
-  } catch (err) {
-    next(err);
+      const todosData = await models.Todo.findAndCountAll(todosQuery);
+
+      res.send({ items: todosData.rows, countOfTodos: todosData.count }, 200);
+    } catch (err) {
+      next(err);
+    }
   }
-});
+);

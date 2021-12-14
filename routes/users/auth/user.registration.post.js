@@ -2,35 +2,48 @@ const models = require("../../../models");
 const bcrypt = require("bcrypt");
 const express = require("express");
 const router = express.Router();
-const jwt = require("jsonwebtoken");
+const { buildCheckFunction, oneOf, validationResult } = require("express-validator");
+const checkBody = buildCheckFunction(["body"]);
 
-module.exports = router.post("/registration", async (req, res, next) => {
-  try {
-    let password = req.body.password || "";
-    const confirm = req.body.confirm || "";
-    const login = req.body.login || "";
+module.exports = router.post(
+  "/registration",
 
-    if (!login || !password) throw new Error("bad body properties");
+  checkBody("login", "login does not exist").exists(),
+  checkBody("password", "password does not exist").exists(),
+  checkBody("confirm", "confirm does not exist").exists(),
 
-    if (!password.match(/^(?=.*[A-Za-z])(?=.*\d)[\w]{8,100}$/))
-      throw new Error("need more difficult password, uisng only a-b and numbers");
+  checkBody("password")
+    .isLength({ min: 8, max: 100 })
+    .withMessage("Password need min symbols is 8 and max 100")
+    .matches(/^(?=.*[A-Za-z])(?=.*\d)[\w]{8,100}$/)
+    .withMessage(
+      "password must be without spaces and specials signs(1 number and 1 letter minimum)"
+    ),
 
-    if (password !== confirm) throw new Error("confirm and passwor must be equal");
+  checkBody("login")
+    .isLength({ min: 4, max: 100 })
+    .withMessage("Login need min symbols is 4 and max 100")
+    .matches(/^(?=.*[A-Za-z])[\w]{4,100}$/)
+    .withMessage("Login must be without spaces and specials signs(1 letter minimum)"),
+  async (req, res, next) => {
+    try {
+      validationResult(req).throw();
+      let password = req.body.password;
+      const { confirm, login } = req.body;
 
-    if (!login.match(/^(?=.*[A-Za-z])[\w]{4,100}$/))
-      throw new Error("bad name validation, need 4-100 symbols and use only a-b and numbers");
+      if (password !== confirm) throw new Error("confirm and passwor must be equal");
+      if (await models.User.findOne({ where: { login } })) throw new Error("user exist yet");
 
-    if (await models.User.findOne({ where: { login } })) throw new Error("user exist yet");
+      password = await bcrypt.hash(req.body.password, 10);
 
-    password = await bcrypt.hash(req.body.password, 10);
+      await models.User.create({
+        login,
+        password,
+      });
 
-    await models.User.create({
-      login,
-      password,
-    });
-
-    res.send("success registered", 200);
-  } catch (err) {
-    next(err);
+      res.send("success registered", 200);
+    } catch (err) {
+      next(err);
+    }
   }
-});
+);
