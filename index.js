@@ -1,18 +1,21 @@
-import express, { json, urlencoded } from "express"
-import dotenv from "dotenv"
-import router from "./routes/router.js"
-import cors from "cors"
-dotenv.config()
+const express = require("express");
+require("dotenv").config();
+const cors = require("cors");
+const recursive = require("recursive-readdir-sync");
+const handleError = require("./middleware/handleError");
 
-const PORT = process.env.PORT || 3001
-const app = express()
+const HOST_PORT = process.env.PORT;
+const app = express();
 
-app.use(cors())
-app.use(json())
-app.use(urlencoded({ extended: true }))
+app.use(cors());
 
-app.use("/", router)
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-app.listen(PORT, () => {
-  console.log("start server")
-})
+recursive(`${__dirname}/routes`).forEach((file) => app.use("/", require(file)));
+
+app.use(handleError);
+
+app.listen(process.env.PORT, () => {
+  console.log("start server on port", HOST_PORT);
+});
