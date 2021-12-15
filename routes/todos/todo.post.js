@@ -24,20 +24,29 @@ module.exports = router.post(
     try {
       validationResult(req).throw();
       const user = await models.User.findByPk(res.locals.userId);
-
+      const newTodo = { user_id: res.locals.userId };
+      // newTodo.name = req.body.name.trim().replace(/\s+/g, " ");
       const name = req.body.name.trim().replace(/\s+/g, " ");
 
       const checkUniq = await models.Todo.findOne({
-        where: {
-          name,
-          user_id: res.locals.userId,
-        },
+        where: { name, user_id: newTodo.user_id },
       });
       if (checkUniq) throw new err("name must be uniq", 400);
 
-      const newTodo = await user.createTodo({ name });
+      const allUserTodos = await models.Todo.findAll({
+        where: newTodo,
+      });
+      const arrOfIndex = [];
+      allUserTodos.forEach((todo) => {
+        arrOfIndex.push(todo.index);
+      });
 
-      res.send({ newTodo }, 200);
+      const maxIndex = Math.max.apply(null, arrOfIndex);
+      maxIndex !== -Infinity ? (newTodo.index = maxIndex + 1) : (newTodo.index = 1);
+      newTodo.name = name;
+      const createdTodo = await user.createTodo(newTodo);
+
+      res.send({ createdTodo }, 200);
     } catch (err) {
       next(err);
     }

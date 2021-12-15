@@ -37,7 +37,7 @@ module.exports = router.get(
       const todosQuery = {
         where: { user_id: res.locals.userId },
       };
-      // todosQuery.order = [["createdAt", sortBy]];
+      todosQuery.order = [["index", sortBy]];
 
       filterBy === "done" && (todosQuery.where.status = true);
       filterBy === "undone" && (todosQuery.where.status = false);
