@@ -2,6 +2,7 @@ const models = require("../../models/");
 const express = require("express");
 const router = express.Router();
 const auth = require("./../../middleware/authorize");
+const err = require("./../../errors/customError");
 const { oneOf, validationResult, param, body } = require("express-validator");
 
 // in request
@@ -40,7 +41,7 @@ module.exports = router.patch(
           },
         }));
 
-      if (checkUniq) throw new Error("name must be uniq");
+      if (checkUniq) throw new err("name must be uniq", 400);
 
       const todo = await models.Todo.findOne({
         where: {
@@ -49,7 +50,7 @@ module.exports = router.patch(
         },
       });
 
-      if (!todo) throw new Error("Todo not founded");
+      if (!todo) throw new err("Todo not founded", 404);
 
       await todo.update({ status, name });
 

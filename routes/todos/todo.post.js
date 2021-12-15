@@ -2,6 +2,7 @@ const models = require("../../models/");
 const express = require("express");
 const router = express.Router();
 const auth = require("./../../middleware/authorize");
+const err = require("./../../errors/customError");
 const { validationResult, body } = require("express-validator");
 
 // in request
@@ -32,7 +33,7 @@ module.exports = router.post(
           user_id: res.locals.userId,
         },
       });
-      if (checkUniq) throw new Error("name must be uniq");
+      if (checkUniq) throw new err("name must be uniq", 400);
 
       const newTodo = await user.createTodo({ name });
 

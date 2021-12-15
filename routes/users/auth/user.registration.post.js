@@ -2,6 +2,7 @@ const models = require("../../../models");
 const bcrypt = require("bcrypt");
 const express = require("express");
 const router = express.Router();
+const err = require("./../../../errors/customError");
 const { validationResult, body } = require("express-validator");
 
 module.exports = router.post(
@@ -30,8 +31,8 @@ module.exports = router.post(
       let password = req.body.password;
       const { confirm, login } = req.body;
 
-      if (password !== confirm) throw new Error("confirm and passwor must be equal");
-      if (await models.User.findOne({ where: { login } })) throw new Error("user exist yet");
+      if (password !== confirm) throw new err("confirm and passwor must be equal", 400);
+      if (await models.User.findOne({ where: { login } })) throw new err("user exist yet", 402);
 
       password = await bcrypt.hash(req.body.password, 10);
 

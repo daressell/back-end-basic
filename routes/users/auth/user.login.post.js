@@ -3,6 +3,7 @@ const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const err = require("./../../../errors/customError");
 const { validationResult, body } = require("express-validator");
 
 module.exports = router.post(
@@ -14,10 +15,10 @@ module.exports = router.post(
       validationResult(req).throw();
       const user = await models.User.findOne({ where: { login: req.body.login } });
 
-      if (!user) throw new Error("user with this login does not exist");
+      if (!user) throw new err("user with this login does not exist", 400);
 
       if (!(await bcrypt.compare(req.body.password, user.password)))
-        throw new Error("invalid password");
+        throw new err("invalid password", 400);
 
       const token = { userId: user.uuid };
       const accessToken = jwt.sign(token, process.env.TOKEN_KEY, {
