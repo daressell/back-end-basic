@@ -3,13 +3,12 @@ const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const { buildCheckFunction, oneOf, validationResult } = require("express-validator");
-const checkBody = buildCheckFunction(["body"]);
+const { validationResult, body } = require("express-validator");
 
 module.exports = router.post(
   "/login",
-  checkBody("login").exists(),
-  checkBody("password").exists(),
+  body("login").exists(),
+  body("password").exists(),
   async (req, res, next) => {
     try {
       validationResult(req).throw();

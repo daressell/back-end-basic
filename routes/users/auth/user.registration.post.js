@@ -2,17 +2,16 @@ const models = require("../../../models");
 const bcrypt = require("bcrypt");
 const express = require("express");
 const router = express.Router();
-const { buildCheckFunction, oneOf, validationResult } = require("express-validator");
-const checkBody = buildCheckFunction(["body"]);
+const { validationResult, body } = require("express-validator");
 
 module.exports = router.post(
   "/registration",
 
-  checkBody("login", "login does not exist").exists(),
-  checkBody("password", "password does not exist").exists(),
-  checkBody("confirm", "confirm does not exist").exists(),
+  body("login", "login does not exist").exists(),
+  body("password", "password does not exist").exists(),
+  body("confirm", "confirm does not exist").exists(),
 
-  checkBody("password")
+  body("password")
     .isLength({ min: 8, max: 100 })
     .withMessage("Password need min symbols is 8 and max 100")
     .matches(/^(?=.*[A-Za-z])(?=.*\d)[\w]{8,100}$/)
@@ -20,7 +19,7 @@ module.exports = router.post(
       "password must be without spaces and specials signs(1 number and 1 letter minimum)"
     ),
 
-  checkBody("login")
+  body("login")
     .isLength({ min: 4, max: 100 })
     .withMessage("Login need min symbols is 4 and max 100")
     .matches(/^(?=.*[A-Za-z])[\w]{4,100}$/)

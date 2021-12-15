@@ -2,8 +2,8 @@ const models = require("../../models/");
 const express = require("express");
 const router = express.Router();
 const auth = require("./../../middleware/authorize");
-const { buildCheckFunction } = require("express-validator");
-const checkParams = buildCheckFunction(["params"]);
+const { param, validationResult } = require("express-validator");
+
 // in request
 // get uuid of todo from params /:uuid
 // ===============
@@ -13,7 +13,7 @@ const checkParams = buildCheckFunction(["params"]);
 module.exports = router.delete(
   "/todo/:uuid",
   auth,
-  checkParams("uuid").exists().isUUID().withMessage("bad data in uuid"),
+  param("uuid").exists().isUUID().withMessage("bad data in uuid"),
   async (req, res, next) => {
     try {
       validationResult(req).throw();

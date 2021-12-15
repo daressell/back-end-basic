@@ -2,8 +2,7 @@ const models = require("../../models/");
 const express = require("express");
 const router = express.Router();
 const auth = require("./../../middleware/authorize");
-const { buildCheckFunction, oneOf, validationResult } = require("express-validator");
-const checkBody = buildCheckFunction(["body"]);
+const { validationResult, body } = require("express-validator");
 
 // in request
 // get only name(has validation inside)
@@ -13,8 +12,8 @@ const checkBody = buildCheckFunction(["body"]);
 
 module.exports = router.post(
   "/todo",
-  oneOf([checkBody("name", "name does not exist").exists()]),
-  checkBody("name")
+  body("name", "name does not exist").exists(),
+  body("name")
     .isLength({ min: 2, max: 100 })
     .withMessage("Name need min symbols is 2 and max 100")
     .matches(/^(?=.*[\w])/)

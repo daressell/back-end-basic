@@ -2,9 +2,7 @@ const models = require("../../models/");
 const express = require("express");
 const router = express.Router();
 const auth = require("./../../middleware/authorize");
-const { buildCheckFunction, oneOf, validationResult } = require("express-validator");
-const checkBody = buildCheckFunction(["body"]);
-const checkParams = buildCheckFunction(["params"]);
+const { oneOf, validationResult, param, body } = require("express-validator");
 
 // in request
 // get uuid of todo from params /:uuid
@@ -17,19 +15,16 @@ const checkParams = buildCheckFunction(["params"]);
 module.exports = router.patch(
   "/todo/:uuid",
   auth,
-  checkParams("uuid").exists().isUUID().withMessage("bad data in uuid"),
+  param("uuid").exists().isUUID().withMessage("bad data in uuid"),
   oneOf([
-    checkBody("name").exists(),
-    checkBody("status")
+    body("name")
       .exists()
-      .isIn([true, false, "true", "false"])
-      .withMessage("bad data in status"),
+      .isLength({ min: 2, max: 100 })
+      .withMessage("Name need min symbols is 2 and max 100")
+      .matches(/^(?=.*[\w])/)
+      .withMessage("Login must be with 1 letter or 1 number minimum"),
+    body("status").exists().isIn([true, false, "true", "false"]).withMessage("bad data in status"),
   ]),
-  checkBody("name")
-    .isLength({ min: 2, max: 100 })
-    .withMessage("Name need min symbols is 2 and max 100")
-    .matches(/^(?=.*[\w])/)
-    .withMessage("Login must be with 1 letter or 1 number minimum"),
   async (req, res, next) => {
     try {
       validationResult(req).throw();

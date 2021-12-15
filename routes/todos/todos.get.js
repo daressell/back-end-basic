@@ -2,8 +2,7 @@ const models = require("../../models/");
 const express = require("express");
 const router = express.Router();
 const auth = require("./../../middleware/authorize");
-const { buildCheckFunction, validationResult } = require("express-validator");
-const checkQuery = buildCheckFunction(["query"]);
+const { validationResult, query } = require("express-validator");
 
 // in request.query
 // page - numeric
@@ -18,14 +17,14 @@ const checkQuery = buildCheckFunction(["query"]);
 module.exports = router.get(
   "/todos",
   auth,
-  checkQuery("filterBy", "filterBy does not exist").exists(),
-  checkQuery("sortBy", "sortBy does not exist").exists(),
-  checkQuery("page")
+  query("filterBy", "filterBy does not exist").exists(),
+  query("sortBy", "sortBy does not exist").exists(),
+  query("page")
     .exists()
     .withMessage("page does not exist")
     .matches(/\d+$/)
     .withMessage("page must be a number"),
-  checkQuery("pageSize")
+  query("pageSize")
     .exists()
     .withMessage("pageSize does not exist")
     .matches(/\d+$/)
