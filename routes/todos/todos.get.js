@@ -45,7 +45,6 @@ module.exports = router.get(
       todosQuery.offset = (page - 1) * pageSize;
 
       const todosData = await models.Todo.findAndCountAll(todosQuery);
-      console.log(todosData);
 
       res.send({ items: todosData.rows, countOfTodos: todosData.count }, 200);
     } catch (err) {
