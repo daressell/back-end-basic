@@ -22,7 +22,7 @@ module.exports = router.post(
 
       const token = { userId: user.uuid };
       const accessToken = jwt.sign(token, process.env.TOKEN_KEY, {
-        expiresIn: "2h",
+        expiresIn: "8h",
       });
 
       res.send({ token: accessToken }, 200);
