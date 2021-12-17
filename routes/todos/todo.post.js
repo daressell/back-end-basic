@@ -17,7 +17,7 @@ module.exports = router.post(
   body("name")
     .isLength({ min: 2, max: 100 })
     .withMessage("Name need min symbols is 2 and max 100")
-    .matches(/^(?=.*[\w])/)
+    .matches(/^(?=.*[0-9А-Яа-яA-Za-z])/)
     .withMessage("Login must be with 1 letter or 1 number minimum"),
   auth,
   async (req, res, next) => {
@@ -25,7 +25,6 @@ module.exports = router.post(
       validationResult(req).throw();
       const user = await models.User.findByPk(res.locals.userId);
       const newTodoData = { user_id: res.locals.userId };
-      // newTodo.name = req.body.name.trim().replace(/\s+/g, " ");
       const name = req.body.name.trim().replace(/\s+/g, " ");
 
       const checkUniq = await models.Todo.findOne({
