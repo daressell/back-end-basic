@@ -1,4 +1,4 @@
-require("dotenv").config()
+require("dotenv").config();
 
 module.exports = {
   development: {
@@ -9,10 +9,6 @@ module.exports = {
     dialect: "postgres",
   },
   production: {
-    username: "USER_NAME",
-    password: "USER_PASSWORD",
-    database: "DB_NAME",
-    host: "HOST",
     use_env_variable: "DATABASE_URL",
     dialectOptions: {
       ssl: {
@@ -21,4 +17,4 @@ module.exports = {
       },
     },
   },
-}
+};
