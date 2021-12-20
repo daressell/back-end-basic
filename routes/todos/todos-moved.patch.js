@@ -13,9 +13,7 @@ module.exports = router.patch(
     try {
       validationResult(req).throw();
       const todoData = req.body.todo;
-      console.log(todoData, "todoData");
       const todo = await models.Todo.findByPk(todoData.uuid);
-      console.log(todoData.index, "todoData.index");
       await todo.update({ index: parseInt(todoData.index) });
       res.send(todo);
     } catch (err) {

@@ -41,20 +41,31 @@ module.exports = router.get(
 
       filterBy === "done" && (todosQuery.where.status = true);
       filterBy === "undone" && (todosQuery.where.status = false);
-      todosQuery.limit = pageSize;
+      todosQuery.limit = pageSize + 1;
       todosQuery.offset = (page - 1) * pageSize;
 
       const todosData = await models.Todo.findAndCountAll(todosQuery);
-      console.log(todosData.rows);
 
-      if (page - 2 >= 0) {
-        todosQuery.limit = pageSize;
-        todosQuery.offset = (page - 2) * pageSize;
-        const todosData2 = await models.Todo.findAll(todosQuery);
-        console.log(todosData2[pageSize - 1], "todosData2");
+      if (todosData.rows.length) {
+        if (page - 2 >= 0) {
+          todosQuery.limit = 1;
+          todosQuery.offset = (page - 2) * pageSize + pageSize - 1;
+          todosData.prevTodo = await models.Todo.findOne(todosQuery);
+        } else {
+          sortBy === "desc"
+            ? (todosData.prevTodo = { index: todosData.rows[0].index + 1000 })
+            : (todosData.prevTodo = { index: todosData.rows[0].index - 1000 });
+        }
       }
-
-      res.send({ items: todosData.rows, countOfTodos: todosData.count }, 200);
+      todosData.rows.unshift(todosData.prevTodo);
+      res.send(
+        {
+          items: todosData.rows,
+          countOfTodos: todosData.count,
+          prevTodoIndex: todosData.prevTodo?.index,
+        },
+        200
+      );
     } catch (err) {
       next(err);
     }

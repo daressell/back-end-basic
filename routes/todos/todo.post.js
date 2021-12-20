@@ -36,7 +36,6 @@ module.exports = router.post(
         order: [["index", "DESC"]],
         limit: 1,
       });
-      console.log(lastTodo);
       const index = lastTodo?.index + 1000 || 1000;
 
       const newTodo = { name, index, userId };
@@ -44,7 +43,6 @@ module.exports = router.post(
 
       res.send({ createdTodo }, 200);
     } catch (err) {
-      console.log(err);
       next(err);
     }
   }
