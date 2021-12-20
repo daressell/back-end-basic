@@ -21,29 +21,30 @@ module.exports = router.post(
     .withMessage("Login must be with 1 letter or 1 number minimum"),
   auth,
   async (req, res, next) => {
+    const userId = res.locals.userId;
     try {
       validationResult(req).throw();
-      const user = await models.User.findByPk(res.locals.userId);
-      const newTodoData = { user_id: res.locals.userId };
       const name = req.body.name.trim().replace(/\s+/g, " ");
 
-      const checkUniq = await models.Todo.findOne({
-        where: { name, user_id: newTodoData.user_id },
+      const checkExist = await models.Todo.findOne({
+        where: { name, user_id: userId },
       });
-      if (checkUniq) throw new err("name must be uniq", 400);
+      if (checkExist) throw new err("name must be uniq", 400);
 
-      const allUserTodos = await models.Todo.findAll({
-        where: newTodoData,
+      const lastTodo = await models.Todo.findOne({
+        where: { user_id: res.locals.userId },
+        order: [["index", "DESC"]],
+        limit: 1,
       });
-      const arrOfIndex = allUserTodos.map((todo) => todo.index);
+      console.log(lastTodo);
+      const index = lastTodo?.index + 1000 || 1000;
 
-      const maxIndex = Math.max.apply(null, arrOfIndex);
-      maxIndex !== -Infinity ? (newTodoData.index = maxIndex + 1) : (newTodoData.index = 1);
-      newTodoData.name = name;
-      const createdTodo = await user.createTodo(newTodoData);
+      const newTodo = { name, index, userId };
+      const createdTodo = await models.Todo.create(newTodo);
 
       res.send({ createdTodo }, 200);
     } catch (err) {
+      console.log(err);
       next(err);
     }
   }

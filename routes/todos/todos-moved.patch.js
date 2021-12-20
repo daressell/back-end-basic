@@ -6,21 +6,18 @@ const err = require("../../errors/customError");
 const { validationResult, body } = require("express-validator");
 
 module.exports = router.patch(
-  "/todosMoved",
-  body("todos", "todos does not exist").exists(),
+  "/todoMoved",
+  body("todo", "todo does not exist").exists(),
   auth,
   async (req, res, next) => {
     try {
       validationResult(req).throw();
-      const todos = req.body.todos;
-      if (!Array.isArray(todos)) throw new err("request data must be array", 400);
-      todos.forEach(async (todo) => {
-        const item = await models.Todo.findByPk(todo.uuid);
-        if (!item || !todo.index) throw new err("bad request data", 402);
-        if (!parseInt(todo.index)) throw new err("data must be array with string and int", 400);
-        await item.update({ index: todo.index });
-      });
-      res.send(todos);
+      const todoData = req.body.todo;
+      console.log(todoData, "todoData");
+      const todo = await models.Todo.findByPk(todoData.uuid);
+      console.log(todoData.index, "todoData.index");
+      await todo.update({ index: parseInt(todoData.index) });
+      res.send(todo);
     } catch (err) {
       next(err);
     }

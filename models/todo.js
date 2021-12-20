@@ -17,6 +17,10 @@ module.exports = (sequelize, Sequelize) => {
           len: [2, 100],
         },
       },
+      userId: {
+        type: Sequelize.STRING,
+        field: "user_id",
+      },
       status: {
         type: Sequelize.BOOLEAN,
         defaultValue: false,

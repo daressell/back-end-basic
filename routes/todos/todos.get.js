@@ -35,7 +35,7 @@ module.exports = router.get(
       const { filterBy, sortBy, page, pageSize } = req.query;
 
       const todosQuery = {
-        where: { user_id: res.locals.userId },
+        where: { userId: res.locals.userId },
       };
       todosQuery.order = [["index", sortBy]];
 
@@ -45,6 +45,14 @@ module.exports = router.get(
       todosQuery.offset = (page - 1) * pageSize;
 
       const todosData = await models.Todo.findAndCountAll(todosQuery);
+      console.log(todosData.rows);
+
+      if (page - 2 >= 0) {
+        todosQuery.limit = pageSize;
+        todosQuery.offset = (page - 2) * pageSize;
+        const todosData2 = await models.Todo.findAll(todosQuery);
+        console.log(todosData2[pageSize - 1], "todosData2");
+      }
 
       res.send({ items: todosData.rows, countOfTodos: todosData.count }, 200);
     } catch (err) {

@@ -27,26 +27,26 @@ module.exports = router.patch(
     body("status").exists().isIn([true, false, "true", "false"]).withMessage("bad data in status"),
   ]),
   async (req, res, next) => {
+    const userId = res.locals.userId;
     try {
       validationResult(req).throw();
       const status = req.body.status;
       const name = req.body.name?.trim().replace(/\s+/g, " ");
 
-      const checkUniq =
+      const checkExist =
         name &&
         (await models.Todo.findOne({
           where: {
             name,
-            user_id: res.locals.userId,
+            userId,
           },
         }));
-
-      if (checkUniq) throw new err("name must be uniq", 400);
+      if (checkExist) throw new err("name must be uniq", 400);
 
       const todo = await models.Todo.findOne({
         where: {
           uuid: req.params.uuid,
-          user_id: res.locals.userId,
+          userId,
         },
       });
 
