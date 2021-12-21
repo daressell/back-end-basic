@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 
 module.exports = (sequelize, Sequelize) => {
   const User = sequelize.define(
@@ -13,7 +13,7 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING,
         allowNull: false,
         validate: {
-          is: /[\wа-яА-Я]/i,
+          is: /[\w]/i,
           len: [2, 100],
         },
       },
@@ -22,6 +22,12 @@ module.exports = (sequelize, Sequelize) => {
         allowNull: false,
         validate: {
           len: [2, 100],
+        },
+      },
+      role: {
+        type: Sequelize.STRING,
+        validate: {
+          isIn: [["admin, user"]],
         },
       },
       createdAt: {
@@ -36,9 +42,9 @@ module.exports = (sequelize, Sequelize) => {
     {
       tableName: "users",
     }
-  )
+  );
   User.associate = (models) => {
-    User.hasMany(models.Todo)
-  }
-  return User
-}
+    User.hasMany(models.Todo);
+  };
+  return User;
+};

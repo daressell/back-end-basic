@@ -22,7 +22,7 @@ module.exports = router.patch(
       .exists()
       .isLength({ min: 2, max: 100 })
       .withMessage("Name need min symbols is 2 and max 100")
-      .matches(/^(?=.*[0-9А-Яа-яA-Za-z])/)
+      .matches(/^(?=.*[\wа-яА-Я])/)
       .withMessage("Login must be with 1 letter or 1 number minimum"),
     body("status").exists().isIn([true, false, "true", "false"]).withMessage("bad data in status"),
   ]),

@@ -20,12 +20,12 @@ module.exports = router.post(
       if (!(await bcrypt.compare(req.body.password, user.password)))
         throw new err("invalid password", 400);
 
-      const token = { userId: user.uuid };
+      const token = { userId: user.uuid, role: user.role };
       const accessToken = jwt.sign(token, process.env.TOKEN_KEY, {
         expiresIn: "8h",
       });
 
-      res.send({ token: accessToken }, 200);
+      res.send({ token: accessToken, role: user.role }, 200);
     } catch (err) {
       next(err);
     }
