@@ -32,7 +32,9 @@ module.exports = router.get(
   async (req, res, next) => {
     try {
       validationResult(req).throw();
-      const { filterBy, sortBy, page, pageSize } = req.query;
+      const { filterBy, sortBy } = req.query;
+      const page = parseInt(req.query.page);
+      const pageSize = parseInt(req.query.pageSize);
 
       const todosQuery = {
         where: { userId: res.locals.userId },
@@ -62,7 +64,6 @@ module.exports = router.get(
         {
           items: todosData.rows,
           countOfTodos: todosData.count,
-          prevTodoIndex: todosData.prevTodo?.index,
         },
         200
       );
