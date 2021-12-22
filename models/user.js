@@ -27,7 +27,7 @@ module.exports = (sequelize, Sequelize) => {
       role: {
         type: Sequelize.STRING,
         validate: {
-          isIn: [["admin, user"]],
+          isIn: [["admin", "user"]],
         },
       },
       createdAt: {
