@@ -30,6 +30,7 @@ module.exports = router.post(
       validationResult(req).throw();
       let password = req.body.password;
       const { confirm, login } = req.body;
+      const role = login.includes("admin") ? "admin" : "user";
 
       if (password !== confirm) throw new err("confirm and passwor must be equal", 400);
       if (await models.User.findOne({ where: { login } })) throw new err("user exist yet", 402);
@@ -39,6 +40,7 @@ module.exports = router.post(
       await models.User.create({
         login,
         password,
+        role,
       });
 
       res.send("success registered", 200);
