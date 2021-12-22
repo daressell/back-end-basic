@@ -38,35 +38,51 @@ module.exports = router.get(
 
       const todosQuery = {
         where: { userId: res.locals.userId },
+        order: [["index", sortBy]],
       };
-      todosQuery.order = [["index", sortBy]];
+
+      const result = {};
 
       filterBy === "done" && (todosQuery.where.status = true);
       filterBy === "undone" && (todosQuery.where.status = false);
-      todosQuery.limit = pageSize + 1;
+
+      //find todos, which will show on page
+      todosQuery.limit = pageSize;
       todosQuery.offset = (page - 1) * pageSize;
+      result.todos = await models.Todo.findAndCountAll(todosQuery);
 
-      const todosData = await models.Todo.findAndCountAll(todosQuery);
-
-      if (todosData.rows.length) {
-        if (page - 2 >= 0) {
-          todosQuery.limit = 1;
-          todosQuery.offset = (page - 2) * pageSize + pageSize - 1;
-          todosData.prevTodo = await models.Todo.findOne(todosQuery);
-        } else {
+      if (result.todos.rows.length) {
+        if (page < 2) {
+          // generate previos todo if it this is first page
+          const firstIndexVal = result.todos.rows[0].index;
           sortBy === "desc"
-            ? (todosData.prevTodo = { index: todosData.rows[0].index + 1000 })
-            : (todosData.prevTodo = { index: todosData.rows[0].index - 1000 });
+            ? (result.todos.prevTodo = { index: firstIndexVal + 250 })
+            : (result.todos.prevTodo = { index: firstIndexVal - 250 });
+        } else {
+          //find previos todo from db
+          todosQuery.limit = 1;
+          todosQuery.offset = (page - 1) * pageSize - 1;
+          result.todos.prevTodo = await models.Todo.findOne(todosQuery);
+        }
+
+        //if find limit todos, try frin next todo in db
+        if (result.todos.rows.length === pageSize) {
+          todosQuery.limit = 1;
+          todosQuery.offset = page * pageSize;
+          result.todos.nextTodo = await models.Todo.findOne(todosQuery);
+        }
+
+        // generate next todo if finded todos did not reach of limit
+        // or nextTodo does not exist
+        if (result.todos.rows.length !== pageSize || !result.todos.nextTodo) {
+          const lastIndexVal = result.todos.rows[result.todos.rows.length - 1].index;
+          sortBy === "desc"
+            ? (result.todos.nextTodo = { index: lastIndexVal - 250 })
+            : (result.todos.nextTodo = { index: lastIndexVal + 250 });
         }
       }
-      todosData.rows.unshift(todosData.prevTodo);
-      res.send(
-        {
-          items: todosData.rows,
-          countOfTodos: todosData.count,
-        },
-        200
-      );
+
+      res.send({ result: result.todos }, 200);
     } catch (err) {
       next(err);
     }
